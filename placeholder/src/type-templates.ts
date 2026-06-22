@@ -1,0 +1,3 @@
+interface Website {}
+
+interface TodaysPicks {}
