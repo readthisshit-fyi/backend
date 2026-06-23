@@ -1,13 +1,20 @@
 import { Hono } from "hono";
-import type * as types from "./type-templates.ts";
+import { cors } from "hono/cors";
 
 const app = new Hono();
+
+app.use(
+  "*",
+  cors({
+    origin: "http://localhost:4321",
+  }),
+);
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-app.get("/todayspicks", (c) => {
+app.get("/todayspicks", async (c) => {
   const titles = ["HackerNews", "CSS Tricks", "DevDocs", "Lobsters", "Smashing Mag", "The Odin Project", "Roadmap.sh", "MDN Web Docs"];
   const descs = [
     "You know that feeling when you open a tab and three hours disappear? Yeah. That's this site. Godspeed.",
@@ -24,10 +31,10 @@ app.get("/todayspicks", (c) => {
   const categories = ["Dev", "Design", "Tools", "News", "Learning", "Fun"];
   const domains = ["example.com", "placeholder.dev", "fake-site.io", "notreal.tech", "mock.fyi"];
 
-  const rand = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
-  const randNum = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const randNum = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-  const websites: types.Website[] = Array.from({ length: 6 }, (_, i) => ({
+  const websites = Array.from({ length: 6 }, (_, i) => ({
     WID: randNum(1000, 9999),
     websiteTitle: rand(titles),
     websiteDesc: rand(descs),
@@ -38,7 +45,7 @@ app.get("/todayspicks", (c) => {
     images: Array.from({ length: randNum(1, 3) }, (_, j) => `https://picsum.photos/seed/${i}${j}/400/300`),
   }));
 
-  console.log("returning a list of websites...");
+  console.log("returning a list of websites... " + Math.random());
 
   return c.json(websites);
 });
